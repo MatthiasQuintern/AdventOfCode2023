@@ -1,4 +1,4 @@
-# [Day X](https://adventofcode.com/2022/day/X) 
+# [Day 1](https://adventofcode.com/2022/day/1) 
 :gift:
 
 Today's language: **Python**
