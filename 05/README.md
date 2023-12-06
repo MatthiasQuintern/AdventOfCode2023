@@ -5,6 +5,8 @@ Today's language: **Rust**
 
 Super fast, it runs both tasks in 0,002s on my pc.
 
+<!-- very efficient -->
+
 ```shell
 rustc day05.rs
 ./day05
