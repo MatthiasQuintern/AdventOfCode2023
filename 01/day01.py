@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import re
 # part 1
 with open("input.txt", "r") as file: print("Part 1:", sum([int(match[0]+match[-1]) for match in [re.findall(r"\d", line) for line in file.readlines()]]))
