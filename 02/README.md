@@ -5,6 +5,8 @@ Today's language: **Rust**
 
 My very first rust program!
 
+<!-- My very first rust program -->
+
 ```shell
 rustc day02.rs
 ./day02
