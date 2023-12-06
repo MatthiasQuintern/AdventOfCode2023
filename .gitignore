@@ -1,2 +1,5 @@
-README.md.temp
+# ignore all without extension 
+*
+!*.*
+!*/
 *.txt
