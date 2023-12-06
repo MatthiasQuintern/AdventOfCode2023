@@ -3,7 +3,7 @@
 
 
 table="| Day | Language | Execuction time | Comment |\n"
-table+="| --- |:---:| ---:| --- |\n"
+table+="|:---:|:---:| ---:| --- |\n"
 for day in $(seq -f "%02g" 1 25); do
     [[ ! -d "$day" ]] && continue
     # echo $day
