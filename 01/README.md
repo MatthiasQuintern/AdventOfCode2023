@@ -7,6 +7,8 @@ Both tasks are solved in one hell of a oneliner each:
 - Task 1: 153 characters / line
 - Task 2: 363 characters / line
 
+<!-- one-liners -->
+
 ```shell
 p day01.py
 ```
