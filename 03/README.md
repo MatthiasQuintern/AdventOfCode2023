@@ -2,6 +2,7 @@
 :gift::gift::gift:
 
 Today's language: **Rust**
+
 Execution time: **0,006 s**
 
 ```shell

@@ -2,6 +2,7 @@
 :gift::gift::gift::gift::gift::gift::gift::gift:
 
 Today's language: **Rust**
+
 Execution time: **0,039 s**
 
 Next time, I should just use 64 bit right from the start...

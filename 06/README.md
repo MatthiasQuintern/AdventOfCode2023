@@ -2,6 +2,7 @@
 :gift::gift::gift::gift::gift::gift:
 
 Today's language: **Rust**
+
 Execution time: **0,001 s**
 
 *Midnight formula go brrrrr*

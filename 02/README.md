@@ -2,6 +2,8 @@
 :gift::gift:
 
 Today's language: **Rust**
+
+
 Execution time: **0,002 s**
 
 My very first rust program!
