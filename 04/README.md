@@ -2,6 +2,7 @@
 :gift::gift::gift::gift:
 
 Today's language: **Rust**
+Execution time: **0,004 s**
 
 ```shell
 rustc day04.rs

@@ -2,12 +2,12 @@
 :gift::gift::gift::gift::gift:
 
 Today's language: **Rust**
+Execution time: **0,009 s**
 
-Super fast, it runs both tasks in 0,002s on my pc.
-
-<!-- very efficient -->
+Super fast!
 
 ```shell
 rustc day05.rs
 ./day05
 ```
+<!-- very efficient -->

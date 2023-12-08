@@ -2,6 +2,7 @@
 :gift::gift::gift::gift::gift::gift::gift:
 
 Today's language: **Rust**
+Execution time: **0,007 s**
 
 Not pretty, but pretty fast.
 
@@ -9,4 +10,4 @@ Not pretty, but pretty fast.
 rustc day07.rs
 ./day07
 ```
-<!-- -->
+<!-- not pretty, but pretty fast -->

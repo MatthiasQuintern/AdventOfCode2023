@@ -2,12 +2,12 @@
 :gift::gift:
 
 Today's language: **Rust**
+Execution time: **0,002 s**
 
 My very first rust program!
-
-<!-- my very first rust program -->
 
 ```shell
 rustc day02.rs
 ./day02
 ```
+<!-- my very first rust program -->
