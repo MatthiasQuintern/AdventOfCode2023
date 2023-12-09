@@ -3,6 +3,8 @@
 
 Today's language: **Rust**
 
+Lines of code: **138**
+
 Execution time: **0,009 s**
 
 Super fast!

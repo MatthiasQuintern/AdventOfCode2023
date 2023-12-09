@@ -3,6 +3,8 @@
 
 Today's language: **Rust**
 
+Lines of code: **60**
+
 Execution time: **0,001 s**
 
 *Midnight formula go brrrrr*

@@ -3,6 +3,8 @@
 
 Today's language: **Rust**
 
+Lines of code: **40**
+
 Execution time: **0,004 s**
 
 ```shell

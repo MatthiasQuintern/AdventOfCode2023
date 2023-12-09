@@ -15,11 +15,14 @@ function find_lang {
     # 1: fileext, 2: lang, 3: howto
     sourcefile=$(ls $day_dir/*.$1 2> /dev/null)
     [[ $? != 0 ]] && return
-    sourcefile=$(basename $sourcefile)
-    printf "$FMT_VAR" "Determined Langugae" "$2 ($sourcefile)"
+    lang=$2
+    sourcefilebase=$(basename $sourcefile)
+    printf "$FMT_VAR" "Determined Langugae" "$2 ($sourcefilebase)"
     sed -i "s/LANG/$2/" $readme
-    howto=$(echo "$3" | sed "s|SOURCE|$sourcefile|")
+    howto=$(echo "$3" | sed "s|SOURCE|$sourcefilebase|")
     sed -i "s(HOWTORUN($howto(" $readme
+    loc=$(sed -r '/^\s*(#|\/\/|\/\*|;)/d;/^\s*$/d' $sourcefile | wc -l)
+    sed -i "s(LOC($loc(" $readme
 }
 
 function get_time {
@@ -28,6 +31,7 @@ function get_time {
     exe=$(basename $exe)
     if [[ $(echo $exe | wc -w) != 1 ]]; then
         printf "$FMT_ERR" "Found multiple or no executables for day $day: '$exe'"
+        cd ..
         return 1
         time=Error
     else
@@ -37,6 +41,7 @@ function get_time {
             printf "\e[34m"
             echo -e "$time"
             printf "\e[0m"
+            cd ..
             return 1
         fi
         time=$(echo -e "$time" | tail -3 | head -1 | awk '{print $2}')
@@ -50,6 +55,7 @@ function get_time {
         else
             time="$sec,$msec s"
         fi
+        cd ..
         # elif [[ $sec != 0 ]]; then
         #     time="$sec,$msec s"
         # else
@@ -73,8 +79,6 @@ else
     printf "$FMT_WARN" "No execution time determined"
     sed -i '/.*EXECTIME.*/d' $readme
 fi
-
-
 
 if [[ -z $1 ]]; then
     printf "$FMT_WARN" "No comment provided"

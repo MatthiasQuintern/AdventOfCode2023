@@ -3,6 +3,8 @@
 
 Today's language: **Python**
 
+Lines of code: **3**
+
 Execution time: **0,021 s**
 
 Both tasks are solved in one hell of a oneliner each:
