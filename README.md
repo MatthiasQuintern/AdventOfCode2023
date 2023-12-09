@@ -3,7 +3,7 @@ This is a repository for my solutions for the [advent of code 2023](https://adve
 
 <!-- table begin -->
 | Day      | Language | Lines of code | Execuction time | Comment                       |
-|:---:     |:---:     | ---:          | ---             |                               |
+|:---:     |:---:     | ---:          | ---:            |---                            |
 | [01](01) | Python   | 3             | 0,021 s         | one-liners                    |
 | [02](02) | Rust     | 49            | 0,002 s         | my very first rust program    |
 | [03](03) | Rust     | 85            | 0,006 s         |                               |
