@@ -2,8 +2,16 @@
 
 table="| Day | Language | Lines of code | Execuction time | Comment |\n"
 table+="|:---:|:---:| ---:| ---: |--- |\n"
-for day in $(seq -f "%02g" 1 25); do
-    [[ ! -d "$day" ]] && continue
+maxday=$(ls -d */ | sed -r 's|0*(.*)/|\1|g' | tail -1)
+for day in $(seq -f "%02g" 1 $maxday); do
+    if [[ ! -d "$day" ]]; then 
+        echo "Missing directory for day $day"
+        continue
+    fi
+    if [[ ! -f "$day/README.md" ]]; then 
+        echo "Missing README for day $day"
+        continue
+    fi
     # echo $day
     lang=$(grep -E "Today's language:" $day/README.md | sed -r 's/.*\*\*(.+)\*\*.*/\1/')
     exectime=$(grep -E "Execution time:" $day/README.md | sed -r 's/.*\*\*(.+)\*\*.*/\1/')
