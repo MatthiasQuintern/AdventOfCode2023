@@ -16,7 +16,7 @@ This approach is super fast since it has 0 heap allocations in loops and compari
 
 ```shell
 rustc day13.rs
-./day13RUN
+./day13
 ```
 
 <!-- binary encoding ftw -->

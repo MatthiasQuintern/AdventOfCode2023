@@ -9,5 +9,5 @@ Execution time: **0,005 s**
 
 ```shell
 rustc day11.rs
-./day11RUN
+./day11
 ```

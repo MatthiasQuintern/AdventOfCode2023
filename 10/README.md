@@ -11,6 +11,6 @@ I used lots of simple bitwise operations because I might implement this solution
 
 ```shell
 rustc day10.rs
-./day10RUN
+./day10
 ```
 <!-- lots of bitwise operations -->

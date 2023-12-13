@@ -124,7 +124,7 @@ else
 fi
 
 if [[ -n $howto ]]; then
-    sed -i "s|HOWTO|$howto|" $readme
+    sed -i "s|HOWTORUN|$howto|" $readme
 fi
 
 if [[ $loc == 0 ]]; then
