@@ -13,5 +13,8 @@ This is a repository for my solutions for the [advent of code 2023](https://adve
 | [07](07) | Rust     | 210           | 0,007 s         | not pretty, but pretty fast   |
 | [08](08) | Rust     | 101           | 0,039 s         |                               |
 | [09](09) | Rust     | 88            | 0,003 s         | implemented triangle datatype |
+| [10](10) | Rust     | 136           | 0,003 s         | lots of bitwise operations    |
+| [11](11) | Rust     | 66            | 0,005 s         |                               |
+| [13](13) | Rust     | 84            | 0,002 s         | binary encoding ftw           |
 
  Lines of code are without blank lines and comments
