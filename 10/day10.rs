@@ -33,8 +33,6 @@ impl std::fmt::Display for Pos {
 }
 
 fn follow(tiles: &mut Vec<Vec<u8>>, start: &Pos, mut direction: u8) -> Option<usize> {
-    let xlen: usize = tiles[0].len();  // assume all are same size
-    let ylen: usize = tiles.len();
     let mut steps: usize = 0;
     let mut current = *start;
     // mark the start tile as loop tile and with its directions
@@ -124,12 +122,10 @@ fn main() {
         }).collect());
     }
     let mut distance: usize = 0;
-    let mut num_tiles: usize = 0;
     for direction in [N, S, E, W] {
         println!("Starting at ({},{})", start_pos.x, start_pos.y);
         if let Some(steps) = follow(&mut tiles, &start_pos, direction) {
             assert!(steps % 2 == 0, "steps={} not even", steps);
-            num_tiles = steps;
             distance = steps / 2;
             break;
         }
