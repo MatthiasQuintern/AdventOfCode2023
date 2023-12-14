@@ -88,8 +88,11 @@ fn main() {
         }
         rocks_store.push(rocks.clone());
     }
-    // do the cycles that remain after the ... Cycle
-    for _ in 0..(1_000_000_000 as usize - cycle_start) % cycle_length - 1 {
+    // do the cycles that remain after the ... Cycle - 1
+    let mut cycle_remainder = (1_000_000_000 as usize - cycle_start) % cycle_length;
+    if cycle_remainder == 0 { cycle_remainder = cycle_length - 1 }
+    else { cycle_remainder -= 1 }
+    for _ in 0..cycle_remainder {
         tilt(&mut rocks, north_at, ns_xlen, ns_ylen);
         tilt(&mut rocks, west_at, ew_xlen, ew_ylen);
         tilt(&mut rocks, south_at, ns_xlen, ns_ylen);
