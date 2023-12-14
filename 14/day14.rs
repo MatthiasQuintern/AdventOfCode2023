@@ -72,6 +72,7 @@ fn main() {
     rocks = original.clone();
     // find a cycle
     let mut rocks_store: Vec<Rocks> = Vec::new();
+    rocks_store.reserve(200);
     let mut cycle_start: usize = 0;
     let mut cycle_length: usize = 0;
     for i in 0..1_000_000_000 as usize {

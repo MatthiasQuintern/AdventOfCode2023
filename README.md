@@ -16,6 +16,6 @@ This is a repository for my solutions for the [advent of code 2023](https://adve
 | [10](10) | Rust     | 136           | 0,003 s         | lots of bitwise operations    |
 | [11](11) | Rust     | 66            | 0,005 s         |                               |
 | [13](13) | Rust     | 84            | 0,002 s         | binary encoding ftw           |
-| [14](14) | Rust     | 84            | 0,171 s         | no bruteforce in < 90 lines   |
+| [14](14) | Rust     | 85            | 0,172 s         | no bruteforce in < 90 lines   |
 
  Lines of code are without blank lines and comments

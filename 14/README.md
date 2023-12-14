@@ -3,9 +3,9 @@
 
 Today's language: **Rust**
 
-Lines of code: **84**
+Lines of code: **85**
 
-Execution time: **0,171 s**
+Execution time: **0,172 s**
 
 This solution uses a single function for the tilting procedure.
 Different tilting directions are achieved by "remapping" `x` and `y` through captures.
