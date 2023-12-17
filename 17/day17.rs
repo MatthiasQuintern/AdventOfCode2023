@@ -46,6 +46,8 @@ const DOWN: u8  = 1;
 const RIGHT: u8 = 2;
 const LEFT: u8  = 3;
 
+const OPPOSITE: [u8; 4] = [DOWN, UP, RIGHT, LEFT];
+
 #[derive(Clone, Copy)]
 struct Node {
     heat_loss: u8,
@@ -60,9 +62,10 @@ impl Node {
 }
 impl std::fmt::Display for Node {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[l={}, ml={:04}{}]", self.heat_loss, self.min_heat_loss, match self.direction_from {
-            // UP => '^', DOWN => 'v', LEFT => '<', RIGHT => '>', _ => 'X'})
-            UP => 'v', DOWN => '^', LEFT => '>', RIGHT => '<', _ => 'X'})
+        write!(f, "[l={}, ml={:04}|{}{}{}{}]", self.heat_loss, self.min_heat_loss, self.steps_from[UP as usize], self.steps_from[DOWN as usize], self.steps_from[LEFT as usize], self.steps_from[RIGHT as usize])
+            // match self.direction_from {
+            // // UP => '^', DOWN => 'v', LEFT => '<', RIGHT => '>', _ => 'X'})
+            // UP => 'v', DOWN => '^', LEFT => '>', RIGHT => '<', _ => 'X'})
     }
 }
 
@@ -86,37 +89,35 @@ fn traverse_grapgh(graph: &mut Vec2D::<Node>) -> u32 {
     
     while !queue.is_empty() {
         let (x, y) = queue.pop_front().unwrap();
-        let opposite: u8;
         let node = *graph.at(x ,y).unwrap();  // copy required because we borrow from graph later :(
         if !node.updated { continue; }
         // update surrounding reachable nodes if they can be reached at a lower cost
-        // dont check the one from where we came from
+        // dont check the direction where we came from
         // if updated, queue them
-        if node.direction_from & (UP | DOWN) != 0 { opposite = node.direction_from ^ (UP | DOWN) }
-        else { opposite = node.direction_from ^ (LEFT | RIGHT) }
 
         let mut update_direction = |direction: u8| {
-            if direction == opposite { return }  // dont update the direction from which this node was reached
-            let mut steps: u8 = 1;
-            if node.direction_from == direction {
-                if node.steps_from >= 3 { return }  // unreachable, because we cant walk more than 3 blocks in one direction
-                steps += node.steps_from;
-            }
+            if node.steps_from[OPPOSITE[direction as usize] as usize] != 0 { return }  // dont update directions from which this node was reached
+            // check if multiple ways work
+            if node.steps_from.iter().filter(|c| c != 0).count() == 1 && node.steps_from[direction as usize] >= 3 { return }
+            if   // unreachable, because we cant walk more than 3 blocks in one direction
+
             if let Some((other_x, other_y)) = go_direction(x, y, xlen, ylen, direction) {
                 let other_node = graph.at_mut(other_x, other_y).unwrap();
                 let heat_loss = node.min_heat_loss + other_node.heat_loss as u32;
                 // TODO use array
+                let steps = node.steps_from[direction as usize]; .iter().filter(|c| **c > 0).min().unwrap_or() + 1;
                 if other_node.min_heat_loss > heat_loss {  // update all
                     other_node.min_heat_loss = node.min_heat_loss + other_node.heat_loss as u32;
-                    other_node.direction_from = direction;
-                    other_node.steps_from = steps;
+                    other_node.steps_from = [0; 4];
+                    // if this node can be reached multiple ways,
+                    // choose the way that minimizes the other node's steps from this direction
+                    other_node.steps_from[direction as usize] = steps;
                     other_node.updated = true;
                     queue.push_back((other_x, other_y));
                 }
                 else if other_node.min_heat_loss == heat_loss {  // mark additional possible direction
-                    other_node.min_heat_loss = node.min_heat_loss + other_node.heat_loss as u32;
-                    other_node.direction_from = direction;
-                    other_node.steps_from = steps;
+                    // other_node.steps_from[direction as usize] = node.steps_from[direction as usize] + 1;
+                    other_node.steps_from[direction as usize] = steps;
                     other_node.updated = true;
                     queue.push_back((other_x, other_y));
                 }
@@ -140,8 +141,8 @@ fn traverse_grapgh(graph: &mut Vec2D::<Node>) -> u32 {
 
 fn main() {
     // let input = "input.txt";
-    let input = "example.txt";
-    // let input = "example2.txt";
+    // let input = "example.txt";
+    let input = "example2.txt";
     let mut lines = read_lines(&input);
     let line_length = lines.next().expect("No line").unwrap().len();
     let n_lines = lines.count() + 1;  // already consumed one
