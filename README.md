@@ -19,5 +19,6 @@ This is a repository for my solutions for the [advent of code 2023](https://adve
 | [14](14) | Rust     | 85            | 0,172 s         | no bruteforce in < 90 lines   |
 | [15](15) | Rust     | 54            | 0,002 s         | hashmap                       |
 | [16](16) | Rust     | 147           | 0,091 s         |                               |
+| [17](17) | Rust     | 177           | 0,429 s         |                               |
 
  Lines of code are without blank lines and comments

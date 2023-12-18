@@ -1,6 +1,7 @@
 use std::io::{self, BufRead};
 use std::collections::VecDeque;
 
+#[derive(Clone)]
 struct Vec2D<T> {
     data: Vec<T>,
     xlen: usize,
@@ -37,35 +38,38 @@ impl<T> std::fmt::Display for Vec2D::<T>
 }
 
 
-// const UP: u8    = 0b00001000;
-// const DOWN: u8  = 0b00000100;
-// const RIGHT: u8 = 0b00000010;
-// const LEFT: u8  = 0b00000001;
-const UP: u8    = 0;
-const DOWN: u8  = 1;
-const RIGHT: u8 = 2;
-const LEFT: u8  = 3;
+type Direction   = u8;
+const UP: Direction    = 0;
+const DOWN: Direction  = 1;
+const RIGHT: Direction = 2;
+const LEFT: Direction  = 3;
 
-const OPPOSITE: [u8; 4] = [DOWN, UP, RIGHT, LEFT];
+const OPPOSITE: [Direction; 4] = [DOWN, UP, LEFT, RIGHT];
+const CHAR: [char; 4] = ['^', 'v', '>', '<'];
 
+type HeatLoss = u32;
 #[derive(Clone, Copy)]
 struct Node {
-    heat_loss: u8,
-    min_heat_loss: u32,
+    heat_loss: HeatLoss,
+    min_heat_from: [HeatLoss; 4],
     steps_from: [u8; 4],
-    // direction_from: u8,
-    // steps_from: u8,
-    updated: bool,  // if false, skip when queued
+    updated_from: [bool; 4],  // if false, skip when queued
  }
 impl Node {
-    fn new() -> Node { return Node{heat_loss: 0, min_heat_loss: u32::MAX, steps_from: [0; 4], updated: true, } }
+    fn new() -> Node { return Node{heat_loss: 0, min_heat_from: [u32::MAX; 4], steps_from: [0; 4], updated_from: [true; 4] } }
 }
 impl std::fmt::Display for Node {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[l={}, ml={:04}|{}{}{}{}]", self.heat_loss, self.min_heat_loss, self.steps_from[UP as usize], self.steps_from[DOWN as usize], self.steps_from[LEFT as usize], self.steps_from[RIGHT as usize])
-            // match self.direction_from {
-            // // UP => '^', DOWN => 'v', LEFT => '<', RIGHT => '>', _ => 'X'})
-            // UP => 'v', DOWN => '^', LEFT => '>', RIGHT => '<', _ => 'X'})
+        let _  = write!(f, "[l={}", self.heat_loss);
+        for i in 0..4 {
+            if self.min_heat_from[i] == u32::MAX { 
+                let _ = write!(f, "|    ");
+            }
+            else {
+                let _ = write!(f, "|{:03}{}", self.min_heat_from[i], CHAR[OPPOSITE[i] as usize]); 
+            }
+        }
+        write!(f, "] ")
     }
 }
 
@@ -73,76 +77,122 @@ impl std::fmt::Display for Node {
 fn go_direction(x: usize, y: usize, x_max: usize, y_max: usize, direction: u8) -> Option<(usize, usize)> {
     match direction {
         DOWN  => if y < y_max - 1 { return Some((x, y + 1)) },
-        UP    => if y > 0 { return Some((x, y - 1)) },
+        UP    => if y >= 1 { return Some((x, y - 1)) },
         RIGHT => if x < x_max - 1 { return Some((x + 1, y)) },
-        LEFT  => if x > 0  { return Some((x - 1, y)) },
+        LEFT  => if x >= 1  { return Some((x - 1, y)) },
         _ => panic!("Invalid direction: '{}'", direction)
     }
     None
 }
 
-fn traverse_grapgh(graph: &mut Vec2D::<Node>) -> u32 {
-    let mut queue: VecDeque<(usize, usize)> = VecDeque::from([(0, 0)]);
+type Queue = VecDeque<(usize, usize, Direction)>;
+fn traverse_graph1(graph: &mut Vec2D::<Node>) -> u32 {
+    let mut queue: Queue = VecDeque::from([(0, 0, RIGHT), (0, 0, DOWN)]);
 
     let xlen= graph.xlen;
     let ylen = graph.ylen;
     
     while !queue.is_empty() {
-        let (x, y) = queue.pop_front().unwrap();
+        let (x, y, direction_from) = queue.pop_front().unwrap();
         let node = *graph.at(x ,y).unwrap();  // copy required because we borrow from graph later :(
-        if !node.updated { continue; }
+        if !node.updated_from[direction_from as usize] { continue; }
         // update surrounding reachable nodes if they can be reached at a lower cost
         // dont check the direction where we came from
         // if updated, queue them
+        // println!("At ({},{}) from {}", x, y, CHAR[direction_from as usize]);
 
-        let mut update_direction = |direction: u8| {
-            if node.steps_from[OPPOSITE[direction as usize] as usize] != 0 { return }  // dont update directions from which this node was reached
-            // check if multiple ways work
-            if node.steps_from.iter().filter(|c| c != 0).count() == 1 && node.steps_from[direction as usize] >= 3 { return }
-            if   // unreachable, because we cant walk more than 3 blocks in one direction
-
-            if let Some((other_x, other_y)) = go_direction(x, y, xlen, ylen, direction) {
-                let other_node = graph.at_mut(other_x, other_y).unwrap();
-                let heat_loss = node.min_heat_loss + other_node.heat_loss as u32;
-                // TODO use array
-                let steps = node.steps_from[direction as usize]; .iter().filter(|c| **c > 0).min().unwrap_or() + 1;
-                if other_node.min_heat_loss > heat_loss {  // update all
-                    other_node.min_heat_loss = node.min_heat_loss + other_node.heat_loss as u32;
-                    other_node.steps_from = [0; 4];
-                    // if this node can be reached multiple ways,
-                    // choose the way that minimizes the other node's steps from this direction
-                    other_node.steps_from[direction as usize] = steps;
-                    other_node.updated = true;
-                    queue.push_back((other_x, other_y));
-                }
-                else if other_node.min_heat_loss == heat_loss {  // mark additional possible direction
-                    // other_node.steps_from[direction as usize] = node.steps_from[direction as usize] + 1;
-                    other_node.steps_from[direction as usize] = steps;
-                    other_node.updated = true;
-                    queue.push_back((other_x, other_y));
-                }
-            }
-        };
-        update_direction(UP);
-        update_direction(DOWN);
-        update_direction(LEFT);
-        update_direction(RIGHT);
-        graph.at_mut(x ,y).unwrap().updated = false;
+        let start_heat_loss = node.min_heat_from[direction_from as usize].min(node.min_heat_from[OPPOSITE[direction_from as usize] as usize]); 
+        if direction_from == UP || direction_from == DOWN {
+            update_direction(&mut queue, graph, start_heat_loss, x, y, RIGHT, 3, 0);
+            update_direction(&mut queue, graph, start_heat_loss, x, y, LEFT, 3, 0);
+        }
+        else {
+            update_direction(&mut queue, graph, start_heat_loss, x, y, UP, 3, 0);
+            update_direction(&mut queue, graph, start_heat_loss, x, y, DOWN, 3, 0);
+        }
+        graph.at_mut(x ,y).unwrap().updated_from[direction_from as usize] = false;
     }
     
 
-    let min_heat_loss = graph.at(xlen - 1, ylen - 1).unwrap().min_heat_loss;
+    let min_heat_loss = *graph.at(xlen - 1, ylen - 1).unwrap().min_heat_from.iter().min().unwrap();
 
     return min_heat_loss;
 }
 
 
+fn traverse_graph2(graph: &mut Vec2D::<Node>) -> u32 {
+    let mut queue: VecDeque<(usize, usize, Direction)> = VecDeque::from([(0, 0, RIGHT), (0, 0, DOWN)]);
+    let xlen= graph.xlen;
+    let ylen = graph.ylen;
+    
+    while !queue.is_empty() {
+        let (x, y, direction_from) = queue.pop_front().unwrap();
+        let node = *graph.at(x ,y).unwrap();  // copy required because we borrow from graph later :(
+        if !node.updated_from[direction_from as usize] { continue; }
+        // println!("At ({},{}) from {}", x, y, CHAR[direction_from as usize]);
+
+        let start_heat_loss = node.min_heat_from[direction_from as usize].min(node.min_heat_from[OPPOSITE[direction_from as usize] as usize]); 
+        if direction_from == UP || direction_from == DOWN {
+            update_direction(&mut queue, graph, start_heat_loss, x, y, RIGHT, 7, 3);
+            update_direction(&mut queue, graph, start_heat_loss, x, y, LEFT,  7, 3);
+        }
+        else {
+            update_direction(&mut queue, graph, start_heat_loss, x, y, UP,    7, 3);
+            update_direction(&mut queue, graph, start_heat_loss, x, y, DOWN,  7, 3);
+        }
+        graph.at_mut(x ,y).unwrap().updated_from[direction_from as usize] = false;
+    }
+
+    let min_heat_loss = *graph.at(xlen - 1, ylen - 1).unwrap().min_heat_from.iter().min().unwrap();
+    return min_heat_loss;
+}
+
+
+fn update_direction(queue: &mut Queue, graph: &mut Vec2D<Node>, mut start_heat_loss: u32, mut start_x: usize, mut start_y: usize, direction: Direction, n_steps: usize, n_skip: usize)  {
+    let xlen= graph.xlen;
+    let ylen = graph.ylen;
+    for _ in 0..n_skip {
+        if let Some((other_x, other_y)) = go_direction(start_x, start_y, xlen, ylen, direction) {
+            let other_node = graph.at_mut(other_x, other_y).unwrap();
+            start_heat_loss += other_node.heat_loss;
+            start_x = other_x;
+            start_y = other_y;
+            // println!("    {} - skipping ({},{}): {} ", CHAR[direction as usize], other_x, other_y, start_heat_loss);
+        }
+        else {
+            // println!("    {} - skipping out of range ", CHAR[direction as usize]);
+            return;
+        }
+    }
+    for _ in 0..n_steps {
+        if let Some((other_x, other_y)) = go_direction(start_x, start_y, xlen, ylen, direction) {
+            // print!("    {} - check ({},{}): {} ", CHAR[direction as usize], other_x, other_y, start_heat_loss);
+            let other_node = graph.at_mut(other_x, other_y).unwrap();
+            start_heat_loss += other_node.heat_loss;
+            if other_node.min_heat_from[direction as usize] > start_heat_loss {  // update all
+                other_node.min_heat_from[direction as usize] = start_heat_loss;
+                other_node.updated_from[direction as usize] = true;
+                queue.push_back((other_x, other_y, direction));
+                // println!("+ shorter");
+                // dont break because we might reach a shorter node
+            }
+            // else {
+                // println!("X longer");
+            // }
+            start_x = other_x;
+            start_y = other_y;
+        }
+        else {
+            // println!("    {} - out of range ", CHAR[direction as usize]);
+            return;
+        }
+    }
+}
 
 
 fn main() {
-    // let input = "input.txt";
+    let input = "input.txt";
     // let input = "example.txt";
-    let input = "example2.txt";
     let mut lines = read_lines(&input);
     let line_length = lines.next().expect("No line").unwrap().len();
     let n_lines = lines.count() + 1;  // already consumed one
@@ -150,33 +200,17 @@ fn main() {
     let mut city_blocks = Vec2D::<Node>::new(line_length, n_lines, Node::new());
     for (y, line) in lines.map(|r| r.ok().unwrap()).enumerate() {
         for (x, c) in line.as_bytes().iter().enumerate() {
-            city_blocks.at_mut(x, y).unwrap().heat_loss = c - b'0';
+            city_blocks.at_mut(x, y).unwrap().heat_loss = (c - b'0') as HeatLoss;
         }
     }
-    city_blocks.at_mut(0, 0).unwrap().min_heat_loss = 0;
-    println!("{}", city_blocks);
-    let min_heat_loss = traverse_grapgh(&mut city_blocks);
-
-    println!("{}", city_blocks);
-
+    city_blocks.at_mut(0, 0).unwrap().min_heat_from = [0; 4];
+    let min_heat_loss = traverse_graph1(&mut city_blocks.clone());
+    // println!("{}", city_blocks);
     println!("Minimum heat loss: (1): {}", min_heat_loss);
 
-    // let reset = |c: &mut Vec2D<u8>| c.data.iter_mut().for_each(|v| *v &= !DIRECTION) ;
-
-    // // it is very stupid at no real need to optimize at this speed
-    // for y in 0..contraption.ylen {
-    //     n_tiles = n_tiles.max(travel_beam(&mut contraption, (0, y, RIGHT)));
-    //     reset(&mut contraption);
-    //     n_tiles = n_tiles.max(travel_beam(&mut contraption, (line_length - 1, y, LEFT)));
-    //     reset(&mut contraption);
-    // }
-    // for x in 0..contraption.xlen {
-    //     n_tiles = n_tiles.max(travel_beam(&mut contraption, (x, 0, DOWN)));
-    //     reset(&mut contraption);
-    //     n_tiles = n_tiles.max(travel_beam(&mut contraption, (x, n_lines - 1, UP)));
-    //     reset(&mut contraption);
-    // }
-    // println!("Max beamed tiles: (2): {}", n_tiles);
+    let min_heat_loss = traverse_graph2(&mut city_blocks);
+    // println!("{}", city_blocks);
+    println!("Minimum heat loss: (2): {}", min_heat_loss);
 }
 
 fn read_lines<P>(filename: P) -> io::Lines<io::BufReader<std::fs::File>>
@@ -186,4 +220,3 @@ where P: AsRef<std::path::Path>, {
         Ok(file) => std::io::BufReader::new(file).lines()
     };
 }
-
