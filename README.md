@@ -20,5 +20,6 @@ This is a repository for my solutions for the [advent of code 2023](https://adve
 | [15](15) | Rust     | 54            | 0,002 s         | hashmap                       |
 | [16](16) | Rust     | 147           | 0,091 s         |                               |
 | [17](17) | Rust     | 177           | 0,429 s         |                               |
+| [19](19) | python   | 82            | 2h 18m 6,59s    | no time for a better solution |
 
  Lines of code are without blank lines and comments
